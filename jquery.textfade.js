@@ -180,6 +180,11 @@
     
     this.each(function(i, val) {
       var el = $(val);
+      
+      var lh = el.css("line-height");
+      if(lh !== "normal") {
+        el.css("line-height", 1);
+      }
       config.font_size = el.css("fontSize");
       config.width = el.css("width");
       
