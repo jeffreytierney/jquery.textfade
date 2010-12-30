@@ -1,0 +1,114 @@
+<html>
+<head>
+<title>TextFade test</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://github.com/jeffreytierney/twitterjs/raw/master/twitterjs.closure.advanced.0.0.1.js"></script>
+<script type="text/javascript" src="jquery.textfade.js"></script>
+
+<style type="text/css">
+  body, div {
+    margin: 0;
+    padding: 0;
+  }
+  div {
+    position: relative;
+  }
+  #textorama {
+    margin-left: 25px;
+    width: 750px;
+    height: 500px;
+    font-size: 36px;
+  }
+  #user {
+      height: 40px;
+      padding-left: 50px;
+      font-size: 24px;
+      line-height: 40px;
+      margin-left: 25px;
+  }
+  #user img {
+      height: 36px;
+      width: 36px;
+      margin-left: -50px;
+      vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+    <form id="twittersearch">
+        <input type="text" id="q" />
+        <input type="submit" value="Search Twitter" />
+    </form>
+<div id="user"></div>
+<div id="textorama"></div>
+
+<script type="text/javascript">
+$(function() {
+  /*
+  var texts = [
+  'Washington (CNN) -- Scientists have discovered a form of bacteria that can thrive on arsenic -- an element generally considered toxic -- dramatically expanding both traditional notions of how life is sustained and the range of where it might be found in the universe, NASA funded-researchers said Thursday.'
+  ,
+  '"Life as we know it requires particular chemical elements and excludes others," Arizona State University researcher Ariel Anbar said in a news release. "But are those the only options? How different could life be?"'
+  ,
+  'The bacterium -- strain GFAJ-1 of the Halomonadaceae family of Gammaproteobacteria -- was scooped from sediment in California\'s Mono Lake, an area rife with high levels of naturally occurring arsenic, it said.'
+  ,
+  'Scientists were able to grow the microbes from the lake with only small portions of phosphorous -- considered an essential nutrient in the biomolecules of naturally occurring bacteria.'
+  ,
+  '"We\'ve discovered an organism that can substitute one element for another," said NASA scientist Felisa Wolfe-Simon. "Nothing should have grown. Put your plant in the dark, it doesn\'t grow."'
+  ,
+  'The bacterium not only grew but also incorporated the arsenic molecules into its DNA, in place of phosphorus, she said.'
+  ,
+  '"We\'ve cracked open the door to what\'s possible elsewhere in the universe," Wolfe-Simon said during a press conference Thursday.'
+  ,
+  'Internet speculation had reached a fever pitch by Thursday ahead of the news conference, which the agency said would "discuss an astrobiology finding that will impact the search for evidence of extraterrestrial life."'
+  ,
+  '"There\'s only one thing this could mean: NASA has aliens," wrote Stephen Losey on FederalTimes.com. "Now let\'s just hope they\'re the friendly, E.T.-kind of visitors, and not the warlike Klingon types."'
+  ,
+  'Speculation was rampant on social networks as well. "Can only mean one thing," one Twitter user posted. "The Martians are coming." One person wrote on the Huffington Post, "we\'ve got enough ... alien lifeforms in Washington."'
+  ,
+  'The findings could affect the scope of space missions by expanding the criteria of chemical elements that had traditionally defined the building blocks of all known life.'
+  ];
+  */
+  var t = new TWITTER();
+  var timer = null;  
+  
+  $("#twittersearch").bind("submit", function() {
+      
+      if($.trim($("#q").val())) {
+          clearTimeout(timer)
+            t.search({q:$("#q").val(), rpp:100, callback: function(texts, meta) {
+                var i=0;
+                $("#user").html('<img src="'+texts[i].profile_image_url+'" />@' + texts[i].from_user);
+                $("#textorama").textfade(texts[i++].text);
+                setTimeout(function() {
+                  $("#user").html('<img src="'+texts[i].profile_image_url+'" />@' + texts[i].from_user)
+                  $("#textorama").textfade(texts[i++].text);
+                  if (i<texts.length-1) {
+                    timer = setTimeout(arguments.callee, 7500);
+                  }
+                }, 7500);
+            }});
+        }
+      
+      return false;
+  })
+  
+  /*
+  var i=0;
+  $("#textorama").html(texts[i++]);
+  
+  
+  setTimeout(function() {
+  
+    $("#textorama").textfade(texts[i++]);
+    
+    if (i<texts.length-1) {
+      setTimeout(arguments.callee, 5000);
+    }
+  
+  }, 5000);
+  */
+});
+</script>
+</body>
+</html>
