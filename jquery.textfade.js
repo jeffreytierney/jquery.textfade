@@ -8,9 +8,11 @@
     var text_len = text.length;
     el = $(el);
     var cur = el.find(".tf_inner");
+    var space = " ";
+    var character;
     
     if(!cur.length) {
-      cur = $(document.createElement("div")).addClass("tf_inner").css({"position":"relative"}).html(el.html());
+      cur = $(document.createElement("div")).addClass("tf_inner").css({"position":"relative", "line-height":"inherit"}).html(el.html());
       el.html(cur);
     }
     
@@ -22,7 +24,16 @@
       var df = document.createDocumentFragment();
       var _text = cur.html();
       for(var i=0, len=_text.length; i<len; i++) {
-        df.appendChild($(document.createElement("span")).html(_text[i]).addClass("tf").get(0));
+        character = (_text[i] !== " " ? _text[i] : space);
+        if(character === "&") {
+          while(i<len && _text[i+1] !== ";") {
+            character += _text[++i];
+          }
+          if(i<len && _text[i+1] === ";") {
+            character += _text[++i];
+          }
+        }
+        df.appendChild($(document.createElement("span")).html(character).addClass("tf").get(0));
       }
       cur.empty().append(df);
       
@@ -51,24 +62,35 @@
     //return;
     
     
-    var tempentry = $(document.createElement("div")).addClass("_textfadetempitem").css({"position":"absolute","top":"0px","left":"0px","font-size":config.font_size,"z-index":"1","color":"transparent","width":config.width+"px","text-indent":(-1*config.indent)+"px"});
-    
+    var tempentry = $(document.createElement("div")).addClass("_textfadetempitem").css({"line-height":"inherit","position":"absolute","top":"0px","left":"0px","font-size":config.font_size,"z-index":"1","color":"transparent","width":config.width,"text-indent":(-1*config.indent)+"px"});
     for(var i=0, len=text.length; i<len; i++) {
-      tempentry.append($(document.createElement("span")).html(text[i]));
+      character = (text[i] !== " " ? text[i] : space);
+      if(character === "&") {
+        while(i<len && text[i+1] !== ";") {
+          text_len--;
+          character += text[++i];
+        }
+        if(i<len && text[i+1] === ";") {
+          text_len--;
+          character += text[++i];
+        }
+      }
+      tempentry.append($(document.createElement("span")).html(character));
     }
     el.append(tempentry);
     
     tempentry.children().each(function(i, val) {
-      if(val && $(val).html()!= " ") {
-        if(chars[$(val).html()]) {
-          chars[$(val).html()].push($(val));
+      character = $(val).html();
+      if(val && character != space) {
+        if(chars[character]) {
+          chars[character].push($(val));
         }
         else {
-          chars[$(val).html()] = [];
-          chars[$(val).html()].push($(val));
+          chars[character] = [];
+          chars[character].push($(val));
         }
       }
-      else if($(val).html()== " ") {
+      else if(character== space) {
         text_len--;
       }
     });
@@ -81,13 +103,16 @@
     
     //return;
     cur.children().each(function(i, val) {
-      if(val && $(val).html()!= "") {
-        if(cur_chars[$(val).html()]) {
-          cur_chars[$(val).html()].push($(val));
-        }
-        else {
-          cur_chars[$(val).html()] = [];
-          cur_chars[$(val).html()].push($(val));
+      if(val) {
+        character = $(val).html();
+        if(character!= "") {
+          if(cur_chars[character]) {
+            cur_chars[character].push($(val));
+          }
+          else {
+            cur_chars[character] = [];
+            cur_chars[character].push($(val));
+          }
         }
       }
     });
@@ -143,7 +168,7 @@
       }
     });
     
-    ;
+    //return;
     
     $.each(cur_chars, function(i, val) {
       if(!chars[i]) {
@@ -163,7 +188,10 @@
   }
 
   function end(config, el, text) {
-    el.html(text);
+    //console.log("end");
+    if(config.clear_on_end) {
+      el.html(text);
+    }
     if(config.on_end) {
       config.on_end.call(this);
     }
@@ -173,7 +201,8 @@
     var config = {
       indent: 0,
       animation_speed: 3000,
-      fade_speed: 5000
+      fade_speed: 5000,
+      clear_on_end: true
     };
     
     if (settings) $.extend(config, settings);
@@ -181,10 +210,15 @@
     this.each(function(i, val) {
       var el = $(val);
       
+      
+      
       var lh = el.css("line-height");
       if(lh !== "normal") {
         el.css("line-height", 1);
       }
+      //el.css("word-break", "keep-all");
+      //el.css("word-wrap", "break-word");
+      
       config.font_size = el.css("fontSize");
       config.width = el.css("width");
       
