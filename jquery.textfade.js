@@ -205,7 +205,7 @@
       clear_on_end: true
     };
     
-    if (settings) $.extend(config, settings);
+    if (settings) { config = $.extend(config, settings); }
     
     this.each(function(i, val) {
       var el = $(val);
